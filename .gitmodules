@@ -1,0 +1,6 @@
+[submodule "ok-STM32F4"]
+	path = ok-STM32F4
+	url = https://github.com/scottc11/ok-STM32F4.git
+[submodule "ok-drivers"]
+	path = ok-drivers
+	url = https://github.com/scottc11/ok-drivers.git
