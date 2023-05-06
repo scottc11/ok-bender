@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/Counterpoint/**",
+                "${workspaceFolder}/STM32F4/CMSIS/Device/ST/STM32F4xx/Include/**",
+                "${workspaceFolder}/STM32F4/CMSIS/Device/ST/STM32F4xx/Source/**",
+                "${workspaceFolder}/STM32F4/HAL/Inc/*",
+                "${workspaceFolder}/STM32F4/HAL/Src/*",
+                "${workspaceFolder}/STM32F4/HAL/rtos/*",
+                "${workspaceFolder}/STM32F4/HAL/rtos/Inc/*",
+                "${workspaceFolder}/STM32F4/cxxsupport/*",
+                "${workspaceFolder}/STM32F4/middleware/**",
+                "${workspaceFolder}/STM32F4/STM32F4xx_HAL_Driver/**",
+                "${workspaceFolder}/STM32F4/STM32F4xx_HAL_Driver/Inc/**",
+                "${workspaceFolder}/STM32F4/STM32F4xx_HAL_Driver/Src/**",
+                "${workspaceFolder}/ok-drivers/**",
+                "${workspaceFolder}/STM32F4/System/*",
+                "${workspaceFolder}/STM32F4/System/Inc/*",
+                "${workspaceFolder}/STM32F4/System/Src/*"
+            ],
+            "defines": ["USE_HAL_DRIVER", "STM32F446xx"],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/opt/homebrew/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
+}
