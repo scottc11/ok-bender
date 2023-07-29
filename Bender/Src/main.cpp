@@ -6,59 +6,51 @@
 #include "DigitalOut.h"
 #include "InterruptIn.h"
 #include "AnalogHandle.h"
-#include "MultiChanADC.h"
 #include "I2C.h"
 #include "IS31FL3246.h"
 #include "MPR121.h"
 #include "DAC8554.h"
 
-I2C i2c3(I2C3_SDA, I2C3_SCL, I2C::Instance::I2C_3);
-
-// MPR121 touchA(&i2c3, TOUCH_INT);
-
-IS31FL3246 led_driver(&i2c3);
-
-uint16_t AnalogHandle::DMA_BUFFER[ADC_DMA_BUFF_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0};
-PinName AnalogHandle::ADC_PINS[ADC_DMA_BUFF_SIZE] = {BEND_ADC_A, BEND_ADC_B, BEND_ADC_C, BEND_ADC_D, POT_ADC_A, POT_ADC_B, POT_ADC_C, POT_ADC_D };
-
-DAC8554 dac(SPI2_MOSI, SPI2_SCK, DAC_CS);
-
-AnalogHandle bendA(BEND_ADC_A);
-AnalogHandle bendB(BEND_ADC_B);
-AnalogHandle bendC(BEND_ADC_C);
-AnalogHandle bendD(BEND_ADC_D);
 AnalogHandle potA(POT_ADC_A);
 AnalogHandle potB(POT_ADC_B);
 AnalogHandle potC(POT_ADC_C);
 AnalogHandle potD(POT_ADC_D);
+DigitalOut rec_led(REC_LED);
+
+I2C i2c3(I2C3_SDA, I2C3_SCL, I2C::Instance::I2C_3);
+
+MPR121 touchA(&i2c3, TOUCH_INT);
+IS31FL3246 led_driver(&i2c3);
+DAC8554 dac(SPI2_MOSI, SPI2_SCK, DAC_CS);
 
 Controller controller(&led_driver);
 
 void taskMain(void *pvParameters)
 {
-    // i2c3.init();
+    i2c3.init();
+    dac.init();
 
+    touchA.init();
 
-    // led_driver.init();
-    // for (int i = 1; i <= 32; i++)
-    // {
-    //     led_driver.setChannelPWM(i, 127);
-    // }
-    
+    led_driver.init();
+    led_driver.setGlobalCurrent(100, 100, 100);
+    led_driver.setControlRegister(false, false, IS31FL3246::PWM_Frequency::_64kHz, false);
+    for (int i = 1; i <= 36; i++)
+    {
+        led_driver.setChannelPWM(i, 127);
+    }
+
+    uint16_t counter = 0;
 
     while (1)
     {
-        // HAL_Delay(2000);
-        potA.read_u16();
-        for (int i = 0; i < 4; i++)
-        {
-                
-        }
-        // HAL_Delay(2000);
-        for (int i = 0; i < 4; i++)
-        {
-            
-        }
+        rec_led.toggle();
+        dac.write(DAC8554::Channel::CHAN_A, potA.read_u16());
+        dac.write(DAC8554::Channel::CHAN_B, potB.read_u16());
+        dac.write(DAC8554::Channel::CHAN_C, potC.read_u16());
+        dac.write(DAC8554::Channel::CHAN_D, potD.read_u16());
+        counter += 1000;
+        HAL_Delay(100);
     }
 }
 
@@ -68,13 +60,7 @@ int main(void)
     
     SystemClock_Config();
 
-    logger_init();
-    logger_log("\nLogger Initialized\n");
-    logger_log_system_config();
-
-    multi_chan_adc_init();
-    multi_chan_adc_start();
-
+    AnalogHandle::initialize();
     HAL_Delay(100);
 
     xTaskCreate(taskMain, "taskMain", 512, NULL, 1, &th_main);
