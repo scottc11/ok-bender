@@ -19,11 +19,11 @@ void task_interrupt_handler(void *params)
         {
         case ISR_ID_TOGGLE_SWITCHES:
             logger_log("\n### Toggle Switch ISR ###\n");
-            controller->switches->updateDegreeStates();
+            // controller->switches->updateDegreeStates();
             break;
         case ISR_ID_TACTILE_BUTTONS:
             logger_log("\n### Tactile Buttons ISR ###\n");
-            controller->pollButtons();
+            // controller->pollButtons();
             break;
         case ISR_ID_TOUCH_PADS:
             logger_log("\n### Touch Pads ISR ###\n");

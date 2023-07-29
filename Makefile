@@ -83,7 +83,7 @@ ok-drivers/utils/Algorithms/Algorithms.cpp \
 ok-drivers/utils/ArrayMethods/ArrayMethods.cpp \
 ok-drivers/utils/BitwiseMethods/BitwiseMethods.cpp \
 
-CPP_SOURCES += $(shell find bender -name '*.cpp')
+CPP_SOURCES += $(shell find Bender -name '*.cpp')
 CPP_SOURCES += $(shell find ok-STM32F4/HAL -name '*.cpp')
 
 # C includes
@@ -108,8 +108,8 @@ C_INCLUDES += \
 -Iok-drivers/utils/ArrayMethods \
 -Iok-drivers/utils/BitwiseMethods \
 -Iok-drivers/utils/OK_I2C \
--bender/Inc \
--bender/Tasks/Inc \
+-IBender/Inc \
+-IBender/Tasks/Inc \
 
 # C++ includes
 CPP_INCLUDES = \

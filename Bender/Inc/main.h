@@ -20,48 +20,36 @@
 
 #define I2C3_SDA PC_9
 #define I2C3_SCL PA_8
-#define I2C1_SDA PB_9
-#define I2C1_SCL PB_8
 
-#define SX1509_CHAN_A_ADDR 0x3E
-#define SX1509_CHAN_B_ADDR 0x70
-#define SX1509_CHAN_C_ADDR 0x3F
-#define SX1509_CHAN_D_ADDR 0x71
 
 #define DAC_CS PB_12
-
 #define SPI2_MOSI PB_15
 #define SPI2_MISO PB_14
 #define SPI2_SCK PB_13
 
-#define ADC_DMA_BUFFER_SIZE 4
+#define ADC_DMA_BUFFER_SIZE 8
 
-#define ADC_A PA_6
-#define ADC_B PA_7
-#define ADC_C PC_5
-#define ADC_D PC_4
+#define BEND_ADC_A PB_1
+#define BEND_ADC_B PC_5
+#define BEND_ADC_C PA_7
+#define BEND_ADC_D PA_5
+
+#define POT_ADC_A PB_0
+#define POT_ADC_B PC_4
+#define POT_ADC_C PA_6
+#define POT_ADC_D PA_4
 
 #define GATE_OUT_A PA_0
 #define GATE_OUT_B PA_1
 #define GATE_OUT_C PA_2
 #define GATE_OUT_D PA_3
 
-#define REC_LED PA_5
-#define CLEAR_LED PA_4
-#define RESET_LED PB_0
+#define REC_LED PC_2
+#define CLEAR_LED PC_0
+#define RESET_LED PC_7
 
-#define DEGREES_INT PC_6
-#define BUTTONS_INT PB_5
 
-#define TOUCH_INT_A PC_0
-#define TOUCH_INT_B PC_1
-#define TOUCH_INT_C PC_2
-#define TOUCH_INT_D PC_3
-
-#define TOUCH_INT_E PC_7
-
-#define MCP23017_DEGREES_ADDR 0x20 // 0100000
-#define MCP23017_CTRL_ADDR 0x24    // 0100100
+#define TOUCH_INT PC_8
 
 #define ISR_ID_TOGGLE_SWITCHES 0
 #define ISR_ID_TACTILE_BUTTONS 1
