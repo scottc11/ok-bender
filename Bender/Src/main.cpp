@@ -10,47 +10,37 @@
 #include "IS31FL3246.h"
 #include "MPR121.h"
 #include "DAC8554.h"
-
-AnalogHandle potA(POT_ADC_A);
-AnalogHandle potB(POT_ADC_B);
-AnalogHandle potC(POT_ADC_C);
-AnalogHandle potD(POT_ADC_D);
-DigitalOut rec_led(REC_LED);
+#include "Bender.h"
 
 I2C i2c3(I2C3_SDA, I2C3_SCL, I2C::Instance::I2C_3);
 
-MPR121 touchA(&i2c3, TOUCH_INT);
+MPR121 touch_pads(&i2c3, TOUCH_INT);
 IS31FL3246 led_driver(&i2c3);
 DAC8554 dac(SPI2_MOSI, SPI2_SCK, DAC_CS);
 
-Controller controller(&led_driver);
+Bender benderA(0, &led_driver, &dac, DAC8554::Channel::CHAN_A, POT_ADC_A, BEND_ADC_A, CHAN_A_TRIG_LED_PIN);
+Bender benderB(1, &led_driver, &dac, DAC8554::Channel::CHAN_B, POT_ADC_B, BEND_ADC_B, CHAN_B_TRIG_LED_PIN);
+Bender benderC(2, &led_driver, &dac, DAC8554::Channel::CHAN_C, POT_ADC_C, BEND_ADC_C, CHAN_C_TRIG_LED_PIN);
+Bender benderD(3, &led_driver, &dac, DAC8554::Channel::CHAN_D, POT_ADC_D, BEND_ADC_D, CHAN_D_TRIG_LED_PIN);
+
+Controller controller(&led_driver, &benderA, &benderB, &benderC, &benderD);
 
 void taskMain(void *pvParameters)
 {
     i2c3.init();
     dac.init();
+    touch_pads.init();
 
-    touchA.init();
-
-    led_driver.init();
-    led_driver.setGlobalCurrent(100, 100, 100);
-    led_driver.setControlRegister(false, false, IS31FL3246::PWM_Frequency::_64kHz, false);
-    for (int i = 1; i <= 36; i++)
-    {
-        led_driver.setChannelPWM(i, 127);
-    }
-
-    uint16_t counter = 0;
+    controller.init();
 
     while (1)
     {
-        rec_led.toggle();
-        dac.write(DAC8554::Channel::CHAN_A, potA.read_u16());
-        dac.write(DAC8554::Channel::CHAN_B, potB.read_u16());
-        dac.write(DAC8554::Channel::CHAN_C, potC.read_u16());
-        dac.write(DAC8554::Channel::CHAN_D, potD.read_u16());
-        counter += 1000;
-        HAL_Delay(100);
+        for (int i = 0; i < 4; i++)
+        {
+            controller.channels[i]->process();
+        }
+        
+        HAL_Delay(10);
     }
 }
 

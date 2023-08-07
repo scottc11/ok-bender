@@ -48,6 +48,10 @@
 #define CLEAR_LED PC_0
 #define RESET_LED PC_7
 
+#define CHAN_A_TRIG_LED_PIN 11
+#define CHAN_B_TRIG_LED_PIN 10
+#define CHAN_C_TRIG_LED_PIN 27
+#define CHAN_D_TRIG_LED_PIN 26
 
 #define TOUCH_INT PC_8
 
