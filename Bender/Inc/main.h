@@ -58,3 +58,13 @@
 #define ISR_ID_TOGGLE_SWITCHES 0
 #define ISR_ID_TACTILE_BUTTONS 1
 #define ISR_ID_TOUCH_PADS 2
+
+enum CHAN
+{
+    A,
+    B,
+    C,
+    D,
+    ALL
+};
+typedef enum CHAN CHAN;
