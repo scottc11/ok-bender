@@ -11,6 +11,7 @@
 #include "IS31FL3246.h"
 #include "MPR121.h"
 #include "DAC8554.h"
+#include "Channel.h"
 #include "Bender.h"
 #include "task_sequence_handler.h"
 
@@ -22,12 +23,17 @@ DAC8554 dac(SPI2_MOSI, SPI2_SCK, DAC_CS);
 
 Metronome metronome;
 
-Bender benderA(0, &led_driver, &dac, DAC8554::Channel::CHAN_A, POT_ADC_A, BEND_ADC_A, CHAN_A_TRIG_LED_PIN);
-Bender benderB(1, &led_driver, &dac, DAC8554::Channel::CHAN_B, POT_ADC_B, BEND_ADC_B, CHAN_B_TRIG_LED_PIN);
-Bender benderC(2, &led_driver, &dac, DAC8554::Channel::CHAN_C, POT_ADC_C, BEND_ADC_C, CHAN_C_TRIG_LED_PIN);
-Bender benderD(3, &led_driver, &dac, DAC8554::Channel::CHAN_D, POT_ADC_D, BEND_ADC_D, CHAN_D_TRIG_LED_PIN);
+Bender benderA(&dac, DAC8554::Channel::CHAN_A, BEND_ADC_A);
+Bender benderB(&dac, DAC8554::Channel::CHAN_B, BEND_ADC_B);
+Bender benderC(&dac, DAC8554::Channel::CHAN_C, BEND_ADC_C);
+Bender benderD(&dac, DAC8554::Channel::CHAN_D, BEND_ADC_D);
 
-Controller controller(&led_driver, &metronome, &benderA, &benderB, &benderC, &benderD);
+Channel chanA(0, &led_driver, CHAN_A_TRIG_LED_PIN, POT_ADC_A, &benderA);
+Channel chanB(1, &led_driver, CHAN_B_TRIG_LED_PIN, POT_ADC_B, &benderB);
+Channel chanC(2, &led_driver, CHAN_C_TRIG_LED_PIN, POT_ADC_C, &benderC);
+Channel chanD(3, &led_driver, CHAN_D_TRIG_LED_PIN, POT_ADC_D, &benderD);
+
+Controller controller(&led_driver, &metronome, &chanA, &chanB, &chanC, &chanD);
 
 void taskMain(void *pvParameters)
 {
@@ -39,12 +45,12 @@ void taskMain(void *pvParameters)
 
     while (1)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            controller.channels[i]->process();
+        if (controller.calibrating) {
+            for (int i = 0; i < 4; i++)
+            {
+                controller.channels[i]->bender->calibrate();
+            }
         }
-        
-        HAL_Delay(10);
     }
 }
 

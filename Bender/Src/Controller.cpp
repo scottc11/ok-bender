@@ -4,6 +4,8 @@ int TIME_LED_PINS[6] = {14, 15, 16, 21, 22, 23};
 
 void Controller::init()
 {
+    loadCalibrationDataFromFlash();
+
     rec_led.write(1);
     clear_led.write(1);
     reset_led.write(1);
@@ -21,8 +23,12 @@ void Controller::init()
         channels[i]->init();
     }
 
-    metro->init();
-    
+    rec_btn.fall(callback(this, &Controller::handleRecBtn));
+    clear_btn.fall(callback(this, &Controller::handleClearBtn));
+    reset_btn.fall(callback(this, &Controller::handleResetBtn));
+    ts_btn.fall(callback(this, &Controller::handleTsBtn));
+
+    metro->init();    
     metro->attachStepCallback(callback(this, &Controller::handleStepCallback));
     metro->attachResetCallback(callback(this, &Controller::handleClockCorrect));
     metro->attachBarResetCallback(callback(this, &Controller::handleBarReset));
@@ -93,4 +99,75 @@ void Controller::handleStepCallback(uint16_t step)
 void Controller::handleBarReset()
 {
     dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::BAR_RESET, 0);
+}
+
+void Controller::handleRecBtn() {
+    
+}
+
+void Controller::handleClearBtn() {
+
+}
+
+void Controller::handleResetBtn() {
+    if (ts_btn.read() == LOW) {
+        if (!calibrating) {
+            dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::ENTER_CALIBRATION_MODE, 0);
+        } else {
+            dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::EXIT_CALIBRATION_MODE, 0);
+        }
+    } else {
+
+    }
+}
+void Controller::handleTsBtn() {
+
+}
+
+/**
+ * @brief Copy each channels config data into flash
+*/
+void Controller::saveCalibrationDataToFlash() {
+    Flash flash;
+    flash.erase(FLASH_CALIBRATION_ADDR);
+    uint32_t data_buffer[2];
+    for (int chan = 0; chan < CHANNEL_COUNT; chan++) // channel iterrator
+    {
+        uint32_t address_offset = FLASH_CALIBRATION_BLOCK_SIZE * chan;
+
+        // max and min Bender calibration data
+        data_buffer[0] = channels[chan]->bender->adc.getInputMin();
+        data_buffer[1] = channels[chan]->bender->adc.getInputMax();
+        flash.write(FLASH_CALIBRATION_ADDR + address_offset, data_buffer, 2);
+    }
+}
+
+/**
+ * @brief load calibration data from flash storage
+ * 
+ */
+void Controller::loadCalibrationDataFromFlash()
+{
+    uint32_t data_buffer[4];
+    Flash flash;
+    flash.read(FLASH_CALIBRATION_ADDR, data_buffer, 4);
+
+    bool configDataEmpty = flash.validate(data_buffer, 4);
+
+    // if no config data or firmware version mismatch, load default configuration
+    if (configDataEmpty)
+    {
+        logger_log("\nCalibration data source: DEFAULT");
+    }
+    else // load the data from flash
+    {
+        logger_log("\nChannel Settings Source: FLASH");
+        for (int chan = 0; chan < CHANNEL_COUNT; chan++)
+        {
+            uint32_t address_offset = FLASH_CALIBRATION_BLOCK_SIZE * chan;
+            flash.read(FLASH_CALIBRATION_ADDR + address_offset, data_buffer, 2);
+            channels[chan]->bender->setMinBend((uint16_t)data_buffer[0]);
+            channels[chan]->bender->setMaxBend((uint16_t)data_buffer[1]);
+        }
+    }
 }

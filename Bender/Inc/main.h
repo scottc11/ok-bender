@@ -18,9 +18,12 @@
 #define MAX_SEQ_LENGTH 32
 #define MAX_SEQ_LENGTH_PPQN (MAX_SEQ_LENGTH * PPQN)
 
+#define FLASH_CALIBRATION_ADDR ADDR_FLASH_SECTOR_6
+#define FLASH_CALIBRATION_BLOCK_SIZE 32 // 8 4-byte words
+
+
 #define I2C3_SDA PC_9
 #define I2C3_SCL PA_8
-
 
 #define DAC_CS PB_12
 #define SPI2_MOSI PB_15
@@ -47,6 +50,11 @@
 #define REC_LED PC_2
 #define CLEAR_LED PC_0
 #define RESET_LED PC_7
+
+#define TIME_SIG_BTN PC_13
+#define REC_BTN PC_6
+#define RESET_BTN PA_9
+#define CLEAR_BTN PA_0
 
 #define CHAN_A_TRIG_LED_PIN 11
 #define CHAN_B_TRIG_LED_PIN 10

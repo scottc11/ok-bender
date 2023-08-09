@@ -20,14 +20,18 @@
                 "${workspaceFolder}/ok-STM32F4/System/Inc/*",
                 "${workspaceFolder}/ok-STM32F4/System/Src/*"
             ],
-            "defines": ["USE_HAL_DRIVER", "STM32F446xx"],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F446xx"
+            ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
             "compilerPath": "/opt/homebrew/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "intelliSenseMode": "macos-clang-arm64"
+            "intelliSenseMode": "macos-clang-arm64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

@@ -34,19 +34,11 @@ void task_sequence_handler(void *params)
             //         ctrl->recLED.toggle();
             //     }
             // }
-            // if (channel == CHAN::ALL)
-            // {
-            //     for (int i = 0; i < CHANNEL_COUNT; i++)
-            //     {
-            //         ctrl->channels[i]->handleClock();
-            //         ctrl->channels[i]->sequence.advance();
-            //     }
-            // }
-            // else
-            // {
-            //     ctrl->channels[channel]->handleClock();
-            //     ctrl->channels[channel]->sequence.advance();
-            // }
+            for (int i = 0; i < 4; i++)
+            {
+                ctrl->channels[i]->bender->process();
+            }
+            
             break;
 
         case SEQ::HANDLE_SELECT_PAD:
@@ -154,6 +146,27 @@ void task_sequence_handler(void *params)
             //         }
             //     }
             // }
+            break;
+        
+        case SEQ::ENTER_CALIBRATION_MODE:
+            ctrl->metro->stop();
+            ctrl->calibrating = true;
+            for (int i = 0; i < 4; i++)
+            {
+                ctrl->channels[i]->bender->adc.resetMinMax();
+            }
+            ctrl->rec_led.write(1);
+            ctrl->clear_led.write(1);
+            ctrl->reset_led.write(1);
+            break;
+        
+        case SEQ::EXIT_CALIBRATION_MODE:
+            ctrl->rec_led.write(0);
+            ctrl->clear_led.write(0);
+            ctrl->reset_led.write(0);
+            ctrl->saveCalibrationDataToFlash();
+            ctrl->metro->start();
+            ctrl->calibrating = false;
             break;
         }
     }
