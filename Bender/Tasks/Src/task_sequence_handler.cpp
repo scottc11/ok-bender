@@ -36,7 +36,7 @@ void task_sequence_handler(void *params)
             // }
             for (int i = 0; i < 4; i++)
             {
-                ctrl->channels[i]->bender->process();
+                ctrl->channels[i]->handlePulse(data);
             }
             
             break;
@@ -54,6 +54,11 @@ void task_sequence_handler(void *params)
         //  if pressed 12 PPQN before beat 1, wait to reset once beat 1 happens
         //  if < 12 ppqn after beat 1, reset immediately
         case SEQ::RESET:
+            ctrl->metro->reset();
+            for (int i = 0; i < 4; i++)
+            {
+                ctrl->channels[channel]->sequence.reset();
+            }
             break;
 
         case SEQ::CLEAR_BEND:

@@ -21,6 +21,8 @@
 #define FLASH_CALIBRATION_ADDR ADDR_FLASH_SECTOR_6
 #define FLASH_CALIBRATION_BLOCK_SIZE 32 // 8 4-byte words
 
+#define EXT_CLOCK_INPUT PA_3
+#define TP_RESET PA_1
 
 #define I2C3_SDA PC_9
 #define I2C3_SCL PA_8
@@ -42,10 +44,10 @@
 #define POT_ADC_C PA_6
 #define POT_ADC_D PA_4
 
-#define GATE_OUT_A PA_0
-#define GATE_OUT_B PA_1
-#define GATE_OUT_C PA_2
-#define GATE_OUT_D PA_3
+#define TRIG_OUT_A PB_4
+#define TRIG_OUT_B PB_5
+#define TRIG_OUT_C PB_6
+#define TRIG_OUT_D PB_7
 
 #define REC_LED PC_2
 #define CLEAR_LED PC_0

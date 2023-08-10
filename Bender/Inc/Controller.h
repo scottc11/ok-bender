@@ -19,13 +19,14 @@ public:
         Channel *chan_b,
         Channel *chan_c,
         Channel *chan_d) : touchInterrupt(TOUCH_INT, PullUp),
-                          ts_btn(TIME_SIG_BTN, PullUp),
-                          rec_btn(REC_BTN, PullUp),
-                          reset_btn(RESET_BTN, PullUp),
-                          clear_btn(CLEAR_BTN, PullUp),
-                          rec_led(REC_LED),
-                          clear_led(CLEAR_LED),
-                          reset_led(RESET_LED)
+                        tp_reset(TP_RESET, PullUp),
+                        ts_btn(TIME_SIG_BTN, PullUp),
+                        rec_btn(REC_BTN, PullUp),
+                        reset_btn(RESET_BTN, PullUp),
+                        clear_btn(CLEAR_BTN, PullUp),
+                        rec_led(REC_LED),
+                        clear_led(CLEAR_LED),
+                        reset_led(RESET_LED)
         {
         leds = leds_ptr;
         metro = metro_ptr;
@@ -37,6 +38,7 @@ public:
 
     IS31FL3246 *leds;
     InterruptIn touchInterrupt; // interupt pin for MPR121
+    InterruptIn tp_reset;
     InterruptIn ts_btn;
     InterruptIn rec_btn;
     InterruptIn reset_btn;
@@ -53,6 +55,7 @@ public:
     void init();
     void handlePulse(uint8_t pulse);
     void handleClockCorrect(uint8_t pulse);
+    void handleClockReset();
     void handleBarReset();
     void handleStepCallback(uint16_t step);
 

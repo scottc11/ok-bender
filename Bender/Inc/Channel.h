@@ -4,6 +4,7 @@
 #include "AnalogHandle.h"
 #include "IS31FL3246.h"
 #include "Bender.h"
+#include "Sequence.h"
 
 class Channel {
 public:
@@ -20,7 +21,9 @@ public:
     IS31FL3246 *led_driver;
     AnalogHandle pot_adc;
     Bender *bender;
+    Sequence sequence;
 
     void init();
+    void handlePulse(int pulse);
     void setTrigLed(int pwm);
 };

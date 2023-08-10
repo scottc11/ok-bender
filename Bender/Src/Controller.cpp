@@ -23,6 +23,8 @@ void Controller::init()
         channels[i]->init();
     }
 
+    tp_reset.rise(callback(this, &Controller::handleClockReset));
+
     rec_btn.fall(callback(this, &Controller::handleRecBtn));
     clear_btn.fall(callback(this, &Controller::handleClearBtn));
     reset_btn.fall(callback(this, &Controller::handleResetBtn));
@@ -33,7 +35,7 @@ void Controller::init()
     metro->attachResetCallback(callback(this, &Controller::handleClockCorrect));
     metro->attachBarResetCallback(callback(this, &Controller::handleBarReset));
     metro->attachPPQNCallback(callback(this, &Controller::handlePulse)); // always do this last
-    metro->disableInputCaptureISR();
+    metro->enableInputCaptureISR();
 
     HAL_Delay(1000); // post initialization
     rec_led.write(0);
@@ -64,6 +66,11 @@ void Controller::handlePulse(uint8_t pulse)
     }
 
     dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::ADVANCE, pulse);
+}
+
+void Controller::handleClockReset()
+{
+    dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::RESET, 0);
 }
 
 /**
@@ -117,9 +124,10 @@ void Controller::handleResetBtn() {
             dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::EXIT_CALIBRATION_MODE, 0);
         }
     } else {
-
+        dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::RESET, 0);
     }
 }
+
 void Controller::handleTsBtn() {
 
 }
