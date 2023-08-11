@@ -31,10 +31,13 @@ public:
     DAC8554 *dac;
     DAC8554::Channel dac_chan; // which dac channel to address
 
+    bool override;
     BendState currState;
     BendState prevState;
-    uint16_t currOutput;                          // current scaled DAC output
-    uint16_t prevOutput;                          // previous scaled DAC output
+    uint16_t currBendPosition;                    // current raw ADC value
+    uint16_t processedBend;                       // current scaled ADC output
+    uint16_t currOutput;                          // current DAC output
+    uint16_t prevOutput;                          // previous DAC output
     uint16_t dacOutputRange = BIT_MAX_16 / 2;     // range in which the DAC can output (in either direction)
     bool invertOutput;                            // whether to invert the output of the DAC based on how the ADC reads the direction of the bender
     uint16_t ratchetThresholds[8];

@@ -27,13 +27,13 @@ void task_sequence_handler(void *params)
         switch (action)
         {
         case SEQ::ADVANCE:
-            // if (SuperSeq::recordArmed || SuperSeq::recordDisarmed)
-            // {
-            //     if (data % 24 == 0)
-            //     { // data in this case is the current pulse
-            //         ctrl->recLED.toggle();
-            //     }
-            // }
+            if (Sequence::recordArmed || Sequence::recordDisarmed)
+            {
+                if (data % 24 == 0)
+                { // data in this case is the current pulse
+                    ctrl->rec_led.toggle();
+                }
+            }
             for (int i = 0; i < 4; i++)
             {
                 ctrl->channels[i]->handlePulse(data);
@@ -57,36 +57,36 @@ void task_sequence_handler(void *params)
             ctrl->metro->reset();
             for (int i = 0; i < 4; i++)
             {
-                ctrl->channels[channel]->sequence.reset();
+                ctrl->channels[i]->sequence.reset();
             }
             break;
 
-        case SEQ::CLEAR_BEND:
-            // if (channel == CHAN::ALL)
-            // {
-            //     for (int i = 0; i < CHANNEL_COUNT; i++)
-            //     {
-            //         ctrl->channels[i]->sequence.clearAllBendEvents();
-            //     }
-            // }
-            // else
-            // {
-            //     ctrl->channels[channel]->sequence.clearAllBendEvents();
-            // }
+        case SEQ::CLEAR:
+            if (channel == CHAN::ALL)
+            {
+                for (int i = 0; i < CHANNEL_COUNT; i++)
+                {
+                    ctrl->channels[i]->sequence.clearAllEvents();
+                }
+            }
+            else
+            {
+                ctrl->channels[channel]->sequence.clearAllEvents();
+            }
             break;
 
         // when the bar overflows back to step 1 (ex. step 4 to step 1)
         case SEQ::BAR_RESET:
-            // if (SuperSeq::recordArmed)
-            // {
-            //     SuperSeq::recordArmed = false;
-            //     dispatch_sequencer_event(CHAN::ALL, SEQ::RECORD_ENABLE, 0);
-            // }
-            // else if (SuperSeq::recordDisarmed)
-            // {
-            //     SuperSeq::recordDisarmed = false;
-            //     dispatch_sequencer_event(CHAN::ALL, SEQ::RECORD_DISABLE, 0);
-            // }
+            if (Sequence::recordArmed)
+            {
+                Sequence::recordArmed = false;
+                dispatch_sequencer_event(CHAN::ALL, SEQ::RECORD_ENABLE, 0);
+            }
+            else if (Sequence::recordDisarmed)
+            {
+                Sequence::recordDisarmed = false;
+                dispatch_sequencer_event(CHAN::ALL, SEQ::RECORD_DISABLE, 0);
+            }
             break;
 
         // every qaurternote
@@ -99,25 +99,32 @@ void task_sequence_handler(void *params)
             break;
 
         case SEQ::RECORD_ENABLE:
-            // ctrl->recLED.write(1);
-            // for (int i = 0; i < CHANNEL_COUNT; i++)
-            //     ctrl->channels[i]->enableSequenceRecording();
+            ctrl->rec_led.write(1);
+            for (int i = 0; i < CHANNEL_COUNT; i++) {
+                ctrl->channels[i]->sequence.enableRecording(ctrl->metro->stepsPerBar);
+                ctrl->channels[i]->sequence.enablePlayback();
+            }
             break;
 
         case SEQ::RECORD_DISABLE:
-            // ctrl->recLED.write(0);
-            // for (int i = 0; i < CHANNEL_COUNT; i++)
-            //     ctrl->channels[i]->disableSequenceRecording();
+            ctrl->rec_led.write(0);
+            for (int i = 0; i < CHANNEL_COUNT; i++) {
+                ctrl->channels[i]->sequence.disableRecording();
+                if (!ctrl->channels[i]->sequence.containsEvents)
+                {
+                    ctrl->channels[i]->sequence.disablePlayback();
+                }
+            }
             break;
 
         case SEQ::RECORD_ARM:
-            // SuperSeq::recordDisarmed = false;
-            // SuperSeq::recordArmed = true;
+            Sequence::recordDisarmed = false;
+            Sequence::recordArmed = true;
             break;
 
         case SEQ::RECORD_DISARM:
-            // SuperSeq::recordArmed = false;
-            // SuperSeq::recordDisarmed = true;
+            Sequence::recordArmed = false;
+            Sequence::recordDisarmed = true;
             break;
 
         case SEQ::RECORD_OVERFLOW:

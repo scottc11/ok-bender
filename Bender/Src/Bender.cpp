@@ -12,30 +12,38 @@ void Bender::init() {
     updateDAC(currOutput);
 }
 
-// polling should no longer check if the bender is idle. It should just update the DAC and call the activeCallback
-// there are no cycles being saved either way.
+/**
+ * @brief This function should read the current ADC value and then process it to 
+ * determine the current bend position + map the ADC value so it ranges 
+ * the full 16-bit range (for the DAC)
+ *
+ *
+ */
 void Bender::process()
 {
-    switch (currState)
+    currBendPosition = adc.read_u16();
+    
+    // this switch block is a type of schmitt trigger based on the previous state of the bender
+    switch (prevState)
     {
     case BENDING_IDLE:
-        if (adc.read_u16() > adc.avgValueWhenIdle + BENDER_NOISE_THRESHOLD)
+        if (currBendPosition > adc.avgValueWhenIdle + BENDER_NOISE_THRESHOLD)
         {
             currState = BENDING_UP;
         }
-        else if (adc.read_u16() < adc.avgValueWhenIdle - BENDER_NOISE_THRESHOLD)
+        else if (currBendPosition < adc.avgValueWhenIdle - BENDER_NOISE_THRESHOLD)
         {
             currState = BENDING_DOWN;
         }
         break;
     case BENDING_UP:
-        if (adc.read_u16() < adc.avgValueWhenIdle + BENDER_NOISE_THRESHOLD - BENDER_HYSTERESIS)
+        if (currBendPosition < adc.avgValueWhenIdle + BENDER_NOISE_THRESHOLD - BENDER_HYSTERESIS)
         {
             currState = BENDING_IDLE;
         }
         break;
     case BENDING_DOWN:
-        if (adc.read_u16() > adc.avgValueWhenIdle - BENDER_NOISE_THRESHOLD + BENDER_HYSTERESIS)
+        if (currBendPosition > adc.avgValueWhenIdle - BENDER_NOISE_THRESHOLD + BENDER_HYSTERESIS)
         {
             currState = BENDING_IDLE;
         }
@@ -44,17 +52,17 @@ void Bender::process()
 
     if (this->isIdle())
     {
-        updateDAC(BENDER_DAC_ZERO);
+        processedBend = BENDER_DAC_ZERO;
 
         if (idleCallback)
             idleCallback();
     }
     else
     {
-        updateDAC(calculateOutput(this->read()));
+        processedBend = calculateOutput(currBendPosition);
 
         if (activeCallback)
-            activeCallback(currOutput);
+            activeCallback(processedBend);
     }
 
     // handle tri-state
@@ -64,8 +72,8 @@ void Bender::process()
         {
             triStateCallback(currState);
         }
-        prevState = currState;
     }
+    prevState = currState;
 }
 
 /**

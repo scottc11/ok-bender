@@ -1,5 +1,6 @@
 #include "Sequence.h"
 
+bool Sequence::recordEnabled = false;
 bool Sequence::recordArmed = false;
 bool Sequence::recordDisarmed = false;
 
@@ -167,6 +168,7 @@ void Sequence::clearAllEvents()
     {
         clearEvent(i);
     }
+    playbackEnabled = false;
     containsEvents = false;
 };
 
@@ -223,11 +225,6 @@ void Sequence::setProgress()
 
 // POSSIBLE CLASS INHERITANCE FUNCTIONS
 
-/**
- * @brief Get the current position of the sequence
- *
- * @return int
- */
 void Sequence::createEvent(int position, uint16_t value)
 {
     events[position] = value;
@@ -239,11 +236,6 @@ uint16_t Sequence::getEvent(int position)
     return events[position];
 }
 
-/**
- * @brief Get the current position of the sequence
- *
- * @return int
- */
 void Sequence::clearEvent(int position)
 {
     events[position] = BENDER_DAC_ZERO;

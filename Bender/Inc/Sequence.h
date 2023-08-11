@@ -40,11 +40,12 @@ public:
     bool adaptiveLength; // flag determining if the sequence length should increase past its current length
     bool overdub;        // flag gets set to true so that the sequence handler clears/overdubs existing events
     bool overwriteExistingEvents;
-    bool recordEnabled;       // when true, sequence will create and new events to the event list
+    
     bool playbackEnabled;     // when true, sequence will playback event list
     bool bendEnabled;         // flag used for overriding current recorded bend with active bend
     bool containsEvents;  // flag indicating if a sequence has any bend events
 
+    static bool recordEnabled;  // when true, sequence will create and new events to the event list
     static bool recordArmed;    // when true, recording will be enabled the next time bar overflows
     static bool recordDisarmed; // when true, recording will be disabled the next time bar overflows
 

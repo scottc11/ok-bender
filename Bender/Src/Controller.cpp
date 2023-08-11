@@ -53,7 +53,7 @@ void Controller::handlePulse(uint8_t pulse)
 {
     if (pulse == 0)
     {
-        rec_led.write(HIGH);
+        reset_led.write(HIGH);
         if (metro->step == 0)
         {
             clear_led.write(HIGH);
@@ -61,7 +61,7 @@ void Controller::handlePulse(uint8_t pulse)
     }
     else if (pulse == 4)
     {
-        rec_led.write(LOW);
+        reset_led.write(LOW);
         clear_led.write(LOW);
     }
 
@@ -109,11 +109,18 @@ void Controller::handleBarReset()
 }
 
 void Controller::handleRecBtn() {
-    
+    if (Sequence::recordArmed || Sequence::recordEnabled)
+    {
+        dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::RECORD_DISARM, 0);
+    }
+    else if (Sequence::recordDisarmed || !Sequence::recordEnabled)
+    {
+        dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::RECORD_ARM, 0);
+    }
 }
 
 void Controller::handleClearBtn() {
-
+    dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::CLEAR, 0);
 }
 
 void Controller::handleResetBtn() {

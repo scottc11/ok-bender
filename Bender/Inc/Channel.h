@@ -26,4 +26,6 @@ public:
     void init();
     void handlePulse(int pulse);
     void setTrigLed(int pwm);
+    void benderActiveCallback(uint16_t value);
+    void benderIdleCallback();
 };
