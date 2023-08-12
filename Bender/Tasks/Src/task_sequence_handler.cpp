@@ -42,6 +42,7 @@ void task_sequence_handler(void *params)
             break;
 
         case SEQ::HANDLE_SELECT_PAD:
+            ctrl->touch_pads->handleTouch(); // this will trigger either onTouch() or onRelease()
             break;
 
         case SEQ::FREEZE:
@@ -62,16 +63,23 @@ void task_sequence_handler(void *params)
             break;
 
         case SEQ::CLEAR:
-            if (channel == CHAN::ALL)
+            ctrl->touch_pads->handleTouch();
+            if (ctrl->touch_pads->getCurrTouched() != 0)
+            {
+                for (int i = 0; i < CHANNEL_COUNT; i++)
+                {
+                    if (bitwise_read_bit(ctrl->touch_pads->getCurrTouched(), ctrl->touch_pad_map[i]))
+                    {
+                        ctrl->channels[i]->sequence.clearAllEvents();
+                    }
+                }
+            }
+            else
             {
                 for (int i = 0; i < CHANNEL_COUNT; i++)
                 {
                     ctrl->channels[i]->sequence.clearAllEvents();
                 }
-            }
-            else
-            {
-                ctrl->channels[channel]->sequence.clearAllEvents();
             }
             break;
 

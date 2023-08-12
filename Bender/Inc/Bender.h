@@ -40,7 +40,6 @@ public:
     uint16_t prevOutput;                          // previous DAC output
     uint16_t dacOutputRange = BIT_MAX_16 / 2;     // range in which the DAC can output (in either direction)
     bool invertOutput;                            // whether to invert the output of the DAC based on how the ADC reads the direction of the bender
-    uint16_t ratchetThresholds[8];
 
     void init();
     void process();

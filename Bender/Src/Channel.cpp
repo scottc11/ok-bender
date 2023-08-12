@@ -6,6 +6,8 @@ void Channel::init() {
     bender->attachActiveCallback(callback(this, &Channel::benderActiveCallback));
     bender->attachIdleCallback(callback(this, &Channel::benderIdleCallback));
     sequence.init();
+    ratchet.init(BENDER_DAC_ZERO, 0, BIT_MAX_16);
+    ratchet.attachCallback(callback(this, &Channel::ratchetHandler));
 }
 
 void Channel::setTrigLed(int pwm)
@@ -24,7 +26,9 @@ void Channel::handlePulse(int pulse)
         {
             if (bender->isIdle())
             {
-                bender->updateDAC(sequence.getEvent(sequence.currPosition));
+                uint16_t bend = sequence.getEvent(sequence.currPosition);
+                bender->updateDAC(bend);
+                ratchet.handleRatchet(sequence.currPosition, bend);
             }
         }
     }
@@ -43,7 +47,7 @@ void Channel::benderActiveCallback(uint16_t value)
     {
         // override existng bend events when record disabled (but sequencer still ON)
         bender->updateDAC(value);
-
+        ratchet.handleRatchet(sequence.currPosition, value);
         // overdub existing bend events when record enabled
         if (sequence.recordEnabled)
         {
@@ -64,5 +68,15 @@ void Channel::benderIdleCallback()
     else
     {
         bender->updateDAC(bender->processedBend);
+    }
+}
+
+void Channel::ratchetHandler(bool state) {
+    if (state) {
+        trig_out.write(1);
+        setTrigLed(100);
+    } else {
+        trig_out.write(0);
+        setTrigLed(0);
     }
 }

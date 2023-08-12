@@ -85,6 +85,7 @@ ok-drivers/utils/BitwiseMethods/BitwiseMethods.cpp \
 
 CPP_SOURCES += $(shell find Bender -name '*.cpp')
 CPP_SOURCES += $(shell find ok-STM32F4/HAL -name '*.cpp')
+CPP_SOURCES += $(shell find ok-STM32F4/misc -name '*.cpp')
 
 # C includes
 C_INCLUDES += \
@@ -98,6 +99,7 @@ C_INCLUDES += \
 -Iok-STM32F4/middleware/FreeRTOS/Source/include \
 -Iok-STM32F4/middleware/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -Iok-STM32F4/middleware/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+-Iok-STM32F4/misc \
 -Iok-STM32F4/system/Inc \
 -Iok-drivers/drivers/DAC8554 \
 -Iok-drivers/drivers/SX1509 \

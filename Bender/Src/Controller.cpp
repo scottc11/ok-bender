@@ -1,5 +1,6 @@
 #include "Controller.h"
 
+int TOUCH_PADS[4] = {6, 5, 4, 3};
 int TIME_LED_PINS[6] = {14, 15, 16, 21, 22, 23};
 
 void Controller::init()
@@ -23,6 +24,12 @@ void Controller::init()
         channels[i]->init();
     }
 
+    touch_pads->init();
+    touch_pads->attachInterruptCallback(callback(this, &Controller::handleTouchInterrupt));
+    touch_pads->attachCallbackTouched(callback(this, &Controller::onTouch));
+    touch_pads->attachCallbackReleased(callback(this, &Controller::onRelease));
+    touch_pads->enable();
+
     tp_reset.rise(callback(this, &Controller::handleClockReset));
 
     rec_btn.fall(callback(this, &Controller::handleRecBtn));
@@ -42,6 +49,16 @@ void Controller::init()
     clear_led.write(0);
     reset_led.write(0);
     metro->start();
+}
+
+void Controller::onTouch(uint8_t pad)
+{
+
+}
+
+void Controller::onRelease(uint8_t pad)
+{
+
 }
 
 /**
@@ -137,6 +154,11 @@ void Controller::handleResetBtn() {
 
 void Controller::handleTsBtn() {
 
+}
+
+void Controller::handleTouchInterrupt()
+{
+    dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::HANDLE_SELECT_PAD, 0);
 }
 
 /**

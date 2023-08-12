@@ -144,18 +144,6 @@ uint16_t Bender::read()
     return adc.read_u16();
 }
 
-void Bender::setRatchetThresholds()
-{
-    ratchetThresholds[3] = this->getIdleValue() + ((this->getMaxBend() - this->getIdleValue()) / 4);
-    ratchetThresholds[2] = this->getIdleValue() + ((this->getMaxBend() - this->getIdleValue()) / 3);
-    ratchetThresholds[1] = this->getIdleValue() + ((this->getMaxBend() - this->getIdleValue()) / 2);
-    ratchetThresholds[0] = this->getIdleValue() + (this->getMaxBend() - this->getIdleValue());
-    ratchetThresholds[7] = this->getIdleValue() - ((this->getIdleValue() - this->getMinBend()) / 4);
-    ratchetThresholds[6] = this->getIdleValue() - ((this->getIdleValue() - this->getMinBend()) / 3);
-    ratchetThresholds[5] = this->getIdleValue() - ((this->getIdleValue() - this->getMinBend()) / 2);
-    ratchetThresholds[4] = this->getIdleValue() - (this->getIdleValue() - this->getMinBend());
-}
-
 /**
  * @brief the average ADC value when bender is idle / not being touched
  *

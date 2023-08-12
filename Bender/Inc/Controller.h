@@ -4,6 +4,7 @@
 #include "Flash.h"
 #include "DigitalOut.h"
 #include "InterruptIn.h"
+#include "MPR121.h"
 #include "IS31FL3246.h"
 #include "Channel.h"
 #include "Metronome.h"
@@ -13,21 +14,23 @@ class Controller
 {
 public:
     Controller(
+        MPR121 *touch_pads_ptr,
         IS31FL3246 *leds_ptr,
         Metronome *metro_ptr,
         Channel *chan_a,
         Channel *chan_b,
         Channel *chan_c,
-        Channel *chan_d) : touchInterrupt(TOUCH_INT, PullUp),
-                        tp_reset(TP_RESET, PullUp),
-                        ts_btn(TIME_SIG_BTN, PullUp),
-                        rec_btn(REC_BTN, PullUp),
-                        reset_btn(RESET_BTN, PullUp),
-                        clear_btn(CLEAR_BTN, PullUp),
-                        rec_led(REC_LED),
-                        clear_led(CLEAR_LED),
-                        reset_led(RESET_LED)
-        {
+        Channel *chan_d) : 
+            tp_reset(TP_RESET, PullUp),
+            ts_btn(TIME_SIG_BTN, PullUp),
+            rec_btn(REC_BTN, PullUp),
+            reset_btn(RESET_BTN, PullUp),
+            clear_btn(CLEAR_BTN, PullUp),
+            rec_led(REC_LED),
+            clear_led(CLEAR_LED),
+            reset_led(RESET_LED)
+    {
+        touch_pads = touch_pads_ptr;
         leds = leds_ptr;
         metro = metro_ptr;
         channels[0] = chan_a;
@@ -36,8 +39,9 @@ public:
         channels[3] = chan_d;
     }
 
+    MPR121 *touch_pads;
     IS31FL3246 *leds;
-    InterruptIn touchInterrupt; // interupt pin for MPR121
+
     InterruptIn tp_reset;
     InterruptIn ts_btn;
     InterruptIn rec_btn;
@@ -51,8 +55,13 @@ public:
     Channel *channels[4];
 
     bool calibrating;
+    int counter;
+    int touch_pad_map[4] = {6, 5, 4, 3};
 
     void init();
+    void onTouch(uint8_t pad);
+    void onRelease(uint8_t pad);
+    void handleTouchInterrupt();
     void handlePulse(uint8_t pulse);
     void handleClockCorrect(uint8_t pulse);
     void handleClockReset();

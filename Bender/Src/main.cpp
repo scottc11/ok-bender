@@ -28,19 +28,17 @@ Bender benderB(&dac, DAC8554::Channel::CHAN_B, BEND_ADC_B);
 Bender benderC(&dac, DAC8554::Channel::CHAN_C, BEND_ADC_C);
 Bender benderD(&dac, DAC8554::Channel::CHAN_D, BEND_ADC_D);
 
-Channel chanA(0, &led_driver, CHAN_A_TRIG_LED_PIN, POT_ADC_A, &benderA);
-Channel chanB(1, &led_driver, CHAN_B_TRIG_LED_PIN, POT_ADC_B, &benderB);
-Channel chanC(2, &led_driver, CHAN_C_TRIG_LED_PIN, POT_ADC_C, &benderC);
-Channel chanD(3, &led_driver, CHAN_D_TRIG_LED_PIN, POT_ADC_D, &benderD);
+Channel chanA(0, &led_driver, CHAN_A_TRIG_LED_PIN, TRIG_OUT_A, POT_ADC_A, &benderA);
+Channel chanB(1, &led_driver, CHAN_B_TRIG_LED_PIN, TRIG_OUT_B, POT_ADC_B, &benderB);
+Channel chanC(2, &led_driver, CHAN_C_TRIG_LED_PIN, TRIG_OUT_C, POT_ADC_C, &benderC);
+Channel chanD(3, &led_driver, CHAN_D_TRIG_LED_PIN, TRIG_OUT_D, POT_ADC_D, &benderD);
 
-Controller controller(&led_driver, &metronome, &chanA, &chanB, &chanC, &chanD);
+Controller controller(&touch_pads, &led_driver, &metronome, &chanA, &chanB, &chanC, &chanD);
 
 void taskMain(void *pvParameters)
 {
     i2c3.init();
     dac.init();
-    touch_pads.init();
-
     controller.init();
 
     while (1)
