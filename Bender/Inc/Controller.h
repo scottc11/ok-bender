@@ -57,6 +57,7 @@ public:
     bool calibrating;
     int counter;
     int touch_pad_map[4] = {6, 5, 4, 3};
+    int time_led_pins[6] = {14, 15, 16, 21, 22, 23};
 
     void init();
     void onTouch(uint8_t pad);

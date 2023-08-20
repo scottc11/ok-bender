@@ -10,7 +10,7 @@
 
 class Channel {
 public:
-    Channel(int _index, IS31FL3246 *leds_ptr, int led_pin, PinName trig_pin, PinName pot_adc_pin, Bender *bender_ptr) : trig_out(trig_pin), pot_adc(pot_adc_pin)
+    Channel(int _index, IS31FL3246 *leds_ptr, int led_pin, PinName trig_pin, PinName pot_adc_pin, Bender *bender_ptr) : trig_out(trig_pin, 1), pot_adc(pot_adc_pin)
     {
         index = _index;
         led_driver = leds_ptr;
@@ -20,7 +20,7 @@ public:
 
     int index;
     int trig_led_pin;
-    DigitalOut trig_out;
+    DigitalOut trig_out; // inverted output via transistor
     IS31FL3246 *led_driver;
     AnalogHandle pot_adc;
     Bender *bender;

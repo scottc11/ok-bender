@@ -54,7 +54,6 @@ public:
     uint16_t getMinBend();
     void setMaxBend(uint16_t value) { adc.setInputMax(value); }
     void setMinBend(uint16_t value) { adc.setInputMin(value); }
-    void setRatchetThresholds();
 
     void attachIdleCallback(Callback<void()> func);
     void attachActiveCallback(Callback<void(uint16_t bend)> func);

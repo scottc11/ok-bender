@@ -168,7 +168,10 @@ void Sequence::clearAllEvents()
     {
         clearEvent(i);
     }
-    playbackEnabled = false;
+    if (!recordEnabled) // we only want to disable playback if record is disabled
+    {
+        disablePlayback();
+    }
     containsEvents = false;
 };
 

@@ -56,6 +56,10 @@ void Channel::benderActiveCallback(uint16_t value)
     }
 }
 
+/**
+ * @brief callback that executes when a bender is in its idle state
+ * 
+ */
 void Channel::benderIdleCallback()
 {
     if (sequence.playbackEnabled)
@@ -71,12 +75,17 @@ void Channel::benderIdleCallback()
     }
 }
 
+/**
+ * @brief callback that executes when the ratchet state changes
+ * 
+ * @param state 
+ */
 void Channel::ratchetHandler(bool state) {
     if (state) {
-        trig_out.write(1);
+        trig_out.write(0); // inverted output!
         setTrigLed(100);
     } else {
-        trig_out.write(0);
+        trig_out.write(1);
         setTrigLed(0);
     }
 }

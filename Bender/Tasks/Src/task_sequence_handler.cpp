@@ -27,6 +27,7 @@ void task_sequence_handler(void *params)
         switch (action)
         {
         case SEQ::ADVANCE:
+            // if reset armed && position == 0, then reset
             if (Sequence::recordArmed || Sequence::recordDisarmed)
             {
                 if (data % 24 == 0)
@@ -51,9 +52,8 @@ void task_sequence_handler(void *params)
         case SEQ::RESET_ARM:
             break;
 
-        // time this so that it triggers:
-        //  if pressed 12 PPQN before beat 1, wait to reset once beat 1 happens
-        //  if < 12 ppqn after beat 1, reset immediately
+        // this is currently offsetting the clock. You need to wait for the next qaurternote before you trigger a reset
+        // but you will need to reset things prior to the controller incrememneting the clock
         case SEQ::RESET:
             ctrl->metro->reset();
             for (int i = 0; i < 4; i++)

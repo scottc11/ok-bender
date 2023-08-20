@@ -1,8 +1,5 @@
 #include "Controller.h"
 
-int TOUCH_PADS[4] = {6, 5, 4, 3};
-int TIME_LED_PINS[6] = {14, 15, 16, 21, 22, 23};
-
 void Controller::init()
 {
     loadCalibrationDataFromFlash();
