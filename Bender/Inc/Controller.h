@@ -10,6 +10,8 @@
 #include "Metronome.h"
 #include "task_sequence_handler.h"
 
+#define NUM_TIME_SIG_OPTIONS 6
+
 class Controller
 {
 public:
@@ -54,10 +56,15 @@ public:
     Metronome *metro;
     Channel *channels[4];
 
+    int timeSigIndex = 1; // this value is used to index the time signiature, as well as its corrosponding LED (via arrays)
+
     bool calibrating;
     int counter;
-    int touch_pad_map[4] = {6, 5, 4, 3};
-    int time_led_pins[6] = {14, 15, 16, 21, 22, 23};
+    int TOUCH_PAD_CHANNEL_MAP[4] = {6, 5, 4, 3};
+    int TOUCH_PAD_MAP[12] = {255, 255, 255, 3, 2, 1, 0, 255, 255, 255, 255, 255};
+    
+    int TIME_SIG_LEDS[NUM_TIME_SIG_OPTIONS] = {14, 15, 16, 21, 22, 23};
+    int TIME_SIG_VALUE_MAP[NUM_TIME_SIG_OPTIONS] = {0, 1, 3, 4, 5, 7};
 
     void init();
     void onTouch(uint8_t pad);
@@ -68,6 +75,9 @@ public:
     void handleClockReset();
     void handleBarReset();
     void handleStepCallback(uint16_t step);
+
+    void incrementTimeSignature();
+    void setTimeSignature(int index);
 
     void handleRecBtn();
     void handleClearBtn();

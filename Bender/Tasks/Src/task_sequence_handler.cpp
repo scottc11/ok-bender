@@ -28,10 +28,10 @@ void task_sequence_handler(void *params)
         {
         case SEQ::ADVANCE:
             // if reset armed && position == 0, then reset
+            
             if (Sequence::recordArmed || Sequence::recordDisarmed)
             {
-                if (data % 24 == 0)
-                { // data in this case is the current pulse
+                if (data % 24 == 0) { // data in this case is the current pulse
                     ctrl->rec_led.toggle();
                 }
             }
@@ -68,7 +68,7 @@ void task_sequence_handler(void *params)
             {
                 for (int i = 0; i < CHANNEL_COUNT; i++)
                 {
-                    if (bitwise_read_bit(ctrl->touch_pads->getCurrTouched(), ctrl->touch_pad_map[i]))
+                    if (bitwise_read_bit(ctrl->touch_pads->getCurrTouched(), ctrl->TOUCH_PAD_MAP[i]))
                     {
                         ctrl->channels[i]->sequence.clearAllEvents();
                     }
@@ -106,6 +106,10 @@ void task_sequence_handler(void *params)
             }
             break;
 
+        case SEQ::INCREMENT_TIME_SIG:
+            ctrl->incrementTimeSignature();
+            break;
+
         case SEQ::RECORD_ENABLE:
             ctrl->rec_led.write(1);
             for (int i = 0; i < CHANNEL_COUNT; i++) {
@@ -138,16 +142,6 @@ void task_sequence_handler(void *params)
         case SEQ::RECORD_OVERFLOW:
             // if (ctrl->channels[channel]->sequence.containsEvents())
             //     ctrl->channels[channel]->drawSequenceToDisplay(true);
-            break;
-
-        case SEQ::INCREMENT_TIME_SIG:
-            // ctrl->clock->setStepsPerBar(ctrl->clock->stepsPerBar + 1);
-            // ctrl->drawTimeSignatureToDisplay();
-            break;
-
-        case SEQ::DECREMENT_TIME_SIG:
-            // ctrl->clock->setStepsPerBar(ctrl->clock->stepsPerBar - 1);
-            // ctrl->drawTimeSignatureToDisplay();
             break;
 
         case SEQ::CORRECT:

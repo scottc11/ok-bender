@@ -34,28 +34,41 @@ void Controller::init()
     reset_btn.fall(callback(this, &Controller::handleResetBtn));
     ts_btn.fall(callback(this, &Controller::handleTsBtn));
 
-    metro->init();    
+    metro->init();
     metro->attachStepCallback(callback(this, &Controller::handleStepCallback));
     metro->attachResetCallback(callback(this, &Controller::handleClockCorrect));
     metro->attachBarResetCallback(callback(this, &Controller::handleBarReset));
     metro->attachPPQNCallback(callback(this, &Controller::handlePulse)); // always do this last
-    metro->enableInputCaptureISR();
+    metro->enableInputCaptureISR(); // comment this line out when testing without external clock
 
-    HAL_Delay(1000); // post initialization
+    HAL_Delay(100); // post initialization
     rec_led.write(0);
     clear_led.write(0);
     reset_led.write(0);
+    
+    this->setTimeSignature(3); // initialize at 4/4
     metro->start();
 }
 
 void Controller::onTouch(uint8_t pad)
 {
-
+    // map incoming pad to one of the 4 channels
+    int channel = TOUCH_PAD_MAP[pad];
+    if (channel < 4) {
+        // if (channels[channel]->sequence.recordEnabled)
+        // {
+        // }
+        channels[channel]->ratchetHandler(true);
+    }
 }
 
 void Controller::onRelease(uint8_t pad)
 {
-
+    int channel = TOUCH_PAD_MAP[pad];
+    if (channel < 4)
+    {
+        channels[channel]->ratchetHandler(false);
+    }
 }
 
 /**
@@ -149,10 +162,38 @@ void Controller::handleResetBtn() {
     }
 }
 
-void Controller::handleTsBtn() {
-
+void Controller::handleTsBtn()
+{
+    dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::INCREMENT_TIME_SIG, 0);
 }
 
+void Controller::incrementTimeSignature()
+{
+    if (timeSigIndex < NUM_TIME_SIG_OPTIONS - 1)
+    {
+        timeSigIndex++;
+    }
+    else
+    {
+        timeSigIndex = 0;
+    }
+    setTimeSignature(timeSigIndex);
+}
+
+void Controller::setTimeSignature(int index)
+{
+    if (index < 0 || index >= NUM_TIME_SIG_OPTIONS)
+        return;
+    for (int i = 0; i < NUM_TIME_SIG_OPTIONS; i++)
+    {
+        leds->setChannelPWM(TIME_SIG_LEDS[i], 0);
+    }
+    timeSigIndex = index;
+    leds->setChannelPWM(TIME_SIG_LEDS[timeSigIndex], 20);
+    metro->setStepsPerBar(TIME_SIG_VALUE_MAP[timeSigIndex]);
+}
+
+// NOTE: the current hardware (for V2 I believe) doesn't have the interrupt pin connected (so this won't get called)
 void Controller::handleTouchInterrupt()
 {
     dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::HANDLE_SELECT_PAD, 0);
