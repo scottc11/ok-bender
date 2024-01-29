@@ -6,6 +6,7 @@
  */
 void Bender::init() {
     adc.setFilter(0.1);
+    attenuator.setFilter(0.1);
     okSemaphore *sem = adc.initDenoising();
     sem->wait();
     currOutput = BENDER_DAC_ZERO; // initialize at idle position for filtering
@@ -96,18 +97,19 @@ void Bender::updateDAC(uint16_t value)
 uint16_t Bender::calculateOutput(uint16_t value)
 {
     uint16_t output;
+    dacOutputRange = (BIT_MAX_16 / 2) * ((float)attenuator.read_u16() / BIT_MAX_16); // attenuate output range
 
     // BEND UP
     if (value > adc.avgValueWhenIdle && value < adc.inputMax)
     {
-        output = (((float)dacOutputRange / (adc.inputMax - adc.avgValueWhenIdle)) * (value - adc.avgValueWhenIdle));
+        output = ((dacOutputRange / (adc.inputMax - adc.avgValueWhenIdle)) * (value - adc.avgValueWhenIdle));
         return (BENDER_DAC_ZERO - output); // inverted
     }
 
     // BEND DOWN
     else if (value < adc.avgValueWhenIdle && value > adc.inputMin)
     {
-        output = (((float)dacOutputRange / (adc.inputMin - adc.avgValueWhenIdle)) * (value - adc.avgValueWhenIdle));
+        output = ((dacOutputRange / (adc.inputMin - adc.avgValueWhenIdle)) * (value - adc.avgValueWhenIdle));
         return (BENDER_DAC_ZERO + output); // non-inverted
     }
     // ELSE executes when a bender is poorly calibrated, and exceeds its max or min bend

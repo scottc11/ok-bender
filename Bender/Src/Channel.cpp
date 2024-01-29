@@ -1,7 +1,6 @@
 #include "Channel.h"
 
 void Channel::init() {
-    pot_adc.setFilter(0.1);
     bender->init();
     bender->attachActiveCallback(callback(this, &Channel::benderActiveCallback));
     bender->attachIdleCallback(callback(this, &Channel::benderIdleCallback));

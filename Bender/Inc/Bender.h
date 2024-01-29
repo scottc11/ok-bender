@@ -21,13 +21,14 @@ public:
         BENDING_IDLE
     };
 
-    Bender(DAC8554 *dac_ptr, DAC8554::Channel _dac_chan, PinName adc_pin) : adc(adc_pin)
+    Bender(DAC8554 *dac_ptr, DAC8554::Channel _dac_chan, PinName adc_pin, PinName att_pin) : adc(adc_pin), attenuator(att_pin)
     {
         dac = dac_ptr;
         dac_chan = _dac_chan;
     }
 
     AnalogHandle adc;
+    AnalogHandle attenuator;
     DAC8554 *dac;
     DAC8554::Channel dac_chan; // which dac channel to address
 
@@ -38,7 +39,7 @@ public:
     uint16_t processedBend;                       // current scaled ADC output
     uint16_t currOutput;                          // current DAC output
     uint16_t prevOutput;                          // previous DAC output
-    uint16_t dacOutputRange = BIT_MAX_16 / 2;     // range in which the DAC can output (in either direction)
+    float dacOutputRange = BIT_MAX_16 / 2;        // range in which the DAC can output (in either direction)
     bool invertOutput;                            // whether to invert the output of the DAC based on how the ADC reads the direction of the bender
 
     void init();
