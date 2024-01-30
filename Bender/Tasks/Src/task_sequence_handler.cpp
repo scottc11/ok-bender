@@ -64,11 +64,11 @@ void task_sequence_handler(void *params)
 
         case SEQ::CLEAR:
             ctrl->touch_pads->handleTouch();
-            if (ctrl->touch_pads->getCurrTouched() != 0)
+            if (ctrl->touch_pads->padIsTouched())
             {
                 for (int i = 0; i < CHANNEL_COUNT; i++)
                 {
-                    if (bitwise_read_bit(ctrl->touch_pads->getCurrTouched(), ctrl->TOUCH_PAD_MAP[i]))
+                    if (bitwise_read_bit(ctrl->touch_pads->getCurrTouched(), ctrl->TOUCH_PAD_CHANNEL_MAP[i]))
                     {
                         ctrl->channels[i]->sequence.clearAllEvents();
                     }
@@ -130,8 +130,13 @@ void task_sequence_handler(void *params)
             break;
 
         case SEQ::RECORD_ARM:
-            Sequence::recordDisarmed = false;
-            Sequence::recordArmed = true;
+            ctrl->touch_pads->handleTouch();
+            if (ctrl->touch_pads->padIsTouched()) { // alt function
+                ctrl->preloadEmptySequence();
+            } else {
+                Sequence::recordDisarmed = false;
+                Sequence::recordArmed = true;
+            }
             break;
 
         case SEQ::RECORD_DISARM:

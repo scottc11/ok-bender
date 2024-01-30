@@ -32,21 +32,21 @@ void Controller::init()
     rec_btn.fall(callback(this, &Controller::handleRecBtn));
     clear_btn.fall(callback(this, &Controller::handleClearBtn));
     reset_btn.fall(callback(this, &Controller::handleResetBtn));
-    ts_btn.fall(callback(this, &Controller::handleTsBtn));
+    time_sig_btn.fall(callback(this, &Controller::handleTimeSigButton));
 
     metro->init();
     metro->attachStepCallback(callback(this, &Controller::handleStepCallback));
     metro->attachResetCallback(callback(this, &Controller::handleClockCorrect));
     metro->attachBarResetCallback(callback(this, &Controller::handleBarReset));
     metro->attachPPQNCallback(callback(this, &Controller::handlePulse)); // always do this last
-    metro->enableInputCaptureISR(); // comment this line out when testing without external clock
+    // metro->enableInputCaptureISR(); // comment this line out when testing without external clock
 
     HAL_Delay(100); // post initialization
     rec_led.write(0);
     clear_led.write(0);
     reset_led.write(0);
     
-    this->setTimeSignature(3); // initialize at 4/4
+    this->setStepsPerBar(3); // initialize at 4/4
     metro->start();
 }
 
@@ -151,7 +151,7 @@ void Controller::handleClearBtn() {
 }
 
 void Controller::handleResetBtn() {
-    if (ts_btn.read() == LOW) {
+    if (time_sig_btn.read() == LOW) {
         if (!calibrating) {
             dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::ENTER_CALIBRATION_MODE, 0);
         } else {
@@ -162,7 +162,21 @@ void Controller::handleResetBtn() {
     }
 }
 
-void Controller::handleTsBtn()
+/**
+ * @brief find which pad is touched and preload that channel with a sequence length equal to whatever the current time sig is.
+*/
+void Controller::preloadEmptySequence()
+{
+    for (int i = 0; i < CHANNEL_COUNT; i++)
+    {
+        if (bitwise_read_bit(touch_pads->getCurrTouched(), TOUCH_PAD_CHANNEL_MAP[i]))
+        {
+            channels[i]->sequence.setFixedLength(metro->getStepsPerBar());
+        }
+    }
+}
+
+void Controller::handleTimeSigButton()
 {
     dispatch_sequencer_event_ISR(CHAN::ALL, SEQ::INCREMENT_TIME_SIG, 0);
 }
@@ -177,10 +191,10 @@ void Controller::incrementTimeSignature()
     {
         timeSigIndex = 0;
     }
-    setTimeSignature(timeSigIndex);
+    setStepsPerBar(timeSigIndex);
 }
 
-void Controller::setTimeSignature(int index)
+void Controller::setStepsPerBar(int index)
 {
     if (index < 0 || index >= NUM_TIME_SIG_OPTIONS)
         return;

@@ -24,7 +24,7 @@ public:
         Channel *chan_c,
         Channel *chan_d) : 
             tp_reset(TP_RESET, PullUp),
-            ts_btn(TIME_SIG_BTN, PullUp),
+            time_sig_btn(TIME_SIG_BTN, PullUp),
             rec_btn(REC_BTN, PullUp),
             reset_btn(RESET_BTN, PullUp),
             clear_btn(CLEAR_BTN, PullUp),
@@ -45,7 +45,7 @@ public:
     IS31FL3246 *leds;
 
     InterruptIn tp_reset;
-    InterruptIn ts_btn;
+    InterruptIn time_sig_btn;
     InterruptIn rec_btn;
     InterruptIn reset_btn;
     InterruptIn clear_btn;
@@ -76,13 +76,15 @@ public:
     void handleBarReset();
     void handleStepCallback(uint16_t step);
 
+    void preloadEmptySequence();
+
     void incrementTimeSignature();
-    void setTimeSignature(int index);
+    void setStepsPerBar(int index);
 
     void handleRecBtn();
     void handleClearBtn();
     void handleResetBtn();
-    void handleTsBtn();
+    void handleTimeSigButton();
 
     void saveCalibrationDataToFlash();
     void loadCalibrationDataFromFlash();

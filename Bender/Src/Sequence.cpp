@@ -99,12 +99,15 @@ void Sequence::enableRecording(int stepsPerBar /*time signature*/)
     if (!this->containsEvents)
     {
         this->reset();
-        this->setLength(2);
-        this->setMaxLength(stepsPerBar);
+        this->setLength(stepsPerBar);
         this->adaptiveLength = true;
     }
     else
     {
+        if (fixedLength) {
+            this->reset();
+            fixedLength = false;
+        }
         this->overwriteExistingEvents = true;
     }
 }
@@ -118,6 +121,23 @@ void Sequence::disableRecording()
         this->adaptiveLength = false;
         this->setLength(this->currStep);
     }
+}
+
+/**
+ * @brief create an empty sequence of a fixed length (or extend the sequence by a fixed length)
+ *
+ * @param steps usually equal to the number of steps in a bar
+ */
+void Sequence::setFixedLength(int steps)
+{
+    if (fixedLength) {
+        this->setLength(length + steps);
+    }
+    else {
+        this->setLength(steps);
+    }
+    containsEvents = true;
+    fixedLength = true;
 }
 
 void Sequence::enablePlayback()
@@ -173,6 +193,7 @@ void Sequence::clearAllEvents()
         disablePlayback();
     }
     containsEvents = false;
+    fixedLength = false;
 };
 
 /**
@@ -209,6 +230,7 @@ void Sequence::setLength(int steps)
         length = steps;
         lengthPPQN = length * PPQN;
         progressDiviser = lengthPPQN / SEQ_PROGRESS_MAX;
+        setMaxLength(steps); // try and get rid of this. I think you have all the length information you need
     }
 };
 

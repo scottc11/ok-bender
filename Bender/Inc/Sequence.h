@@ -43,7 +43,8 @@ public:
     
     bool playbackEnabled;     // when true, sequence will playback event list
     bool bendEnabled;         // flag used for overriding current recorded bend with active bend
-    bool containsEvents;  // flag indicating if a sequence has any bend events
+    bool containsEvents;      // flag indicating if a sequence has any bend events
+    bool fixedLength;         // when true, setting a fixed length will instead add to existing sequence length
 
     static bool recordEnabled;  // when true, sequence will create and new events to the event list
     static bool recordArmed;    // when true, recording will be enabled the next time bar overflows
@@ -56,6 +57,7 @@ public:
     uint16_t getEvent(int position);
     void clearEvent(int position);
     void clearAllEvents();
+    void setFixedLength(int _fixedLength);
 
     void copyPaste(int prevPosition, int newPosition);
     void cutPaste(int prevPosition, int newPosition);
