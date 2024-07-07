@@ -39,7 +39,7 @@ void Controller::init()
     metro->attachResetCallback(callback(this, &Controller::handleClockCorrect));
     metro->attachBarResetCallback(callback(this, &Controller::handleBarReset));
     metro->attachPPQNCallback(callback(this, &Controller::handlePulse)); // always do this last
-    // metro->enableInputCaptureISR(); // comment this line out when testing without external clock
+    metro->enableInputCaptureISR(); // comment this line out when testing without external clock
 
     HAL_Delay(100); // post initialization
     rec_led.write(0);
